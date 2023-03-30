@@ -82,7 +82,7 @@ int main(int argc, char** argv){
     
     double timeNaive, timeBetter, timeBLAS;
     FILE* result = fopen("result.csv", "w");
-    fprintf(result, "%s, %s, %s", "Size", "Type", "Time");
+    fprintf(result, "%s,%s,%s", "Size", "Type", "Time");
 
     for(int i = 1; i < 500; i+=10){
         for (int j = 1; j < 10; j++){
