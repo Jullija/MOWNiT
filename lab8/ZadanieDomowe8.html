@@ -16467,37 +16467,52 @@ Stacktrace:
 
 </div>
 
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h4 id="Zad-2.-Wst%C4%99ga-Newtona">Zad 2. Wst&#281;ga Newtona<a class="anchor-link" href="#Zad-2.-Wst%C4%99ga-Newtona">&#182;</a></h4><p>Wstęga Newtona to fraktal, który powstaje w wyniku zastosowania metody Newtona i kolorowaniu kolejnych wyników iteracji.</p>
+<p>Dzielimy płaszczyznę zespoloną na siatkę kwadratów o równych bokach i stosujemy metodę Newtona dla każdego punktu w środku każdego kwadratu. Dla każdego punktu, iterujemy wzór $z=z−\frac{f(z)}{f′(z)}$ aż do znalezienia pierwiastka lub przekroczenia maksymalnej liczby iteracji.</p>
+<p>Kolorujemy dany punkt na płaszczyźnie zespolonej na określony kolor odpowiadający pierwiastkowi. Punkty, które nie dążą do żadnego pierwiastka, są kolorowane na czarno lub w inny sposób oznaczane.</p>
+
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-julia"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Statistics</span><span class="p">,</span><span class="n">Measures</span><span class="p">,</span><span class="n">Symbolics</span>
+<div class=" highlight hl-julia"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Statistics</span><span class="p">,</span><span class="w"> </span><span class="n">Measures</span><span class="p">,</span><span class="w"> </span><span class="n">Symbolics</span><span class="p">,</span><span class="w"> </span><span class="n">Plots</span>
+
 <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">^</span><span class="mi">5</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="k">function</span><span class="w"> </span><span class="n">get_map</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="w">    </span><span class="nd">@variables</span><span class="w"> </span><span class="n">x</span>
-<span class="w">    </span><span class="n">Dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Differential</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="w">    </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Dx</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">expand_derivatives</span>
-<span class="w">    </span><span class="n">update_expr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">build_function</span><span class="p">(</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">eval</span><span class="p">(</span><span class="n">update_expr</span><span class="p">)</span>
+<span class="n">fDeriv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">4</span>
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
+
+<span class="k">function</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fDeriv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="k">end</span>
-<span class="k">function</span><span class="w"> </span><span class="n">applyiteratively</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">update</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="k">function</span><span class="w"> </span><span class="n">iterationUpdate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">update</span><span class="p">)</span>
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">n</span>
 <span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="w">    </span><span class="k">end</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span>
 <span class="k">end</span>
-<span class="n">update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_map</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eval</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 <span class="n">lower</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="nb">im</span>
 <span class="n">upper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="nb">im</span>
 <span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5e-2</span>
 <span class="n">Z0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">*</span><span class="nb">im</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">real</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span><span class="o">:</span><span class="n">step</span><span class="o">:</span><span class="n">real</span><span class="p">(</span><span class="n">upper</span><span class="p">),</span>
 <span class="w">                    </span><span class="n">a</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">imag</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span><span class="o">:</span><span class="n">step</span><span class="o">:</span><span class="n">imag</span><span class="p">(</span><span class="n">upper</span><span class="p">)]</span>
-<span class="n">Z100</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">applyiteratively</span><span class="o">.</span><span class="p">(</span><span class="n">Z0</span><span class="p">,</span><span class="w"> </span><span class="n">update</span><span class="p">)</span>
-<span class="n">heatmap</span><span class="p">(</span><span class="n">angle</span><span class="o">.</span><span class="p">(</span><span class="n">Z100</span><span class="p">),</span><span class="w"> </span><span class="n">colorbar</span><span class="o">=</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="ss">:rainbow</span><span class="p">,</span><span class="w"> </span><span class="n">ticks</span><span class="o">=</span><span class="nb">false</span><span class="p">)</span>
+<span class="n">Z1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iterationUpdate</span><span class="o">.</span><span class="p">(</span><span class="n">Z0</span><span class="p">,</span><span class="w"> </span><span class="n">update</span><span class="p">)</span>
+<span class="n">heatmap</span><span class="p">(</span><span class="n">angle</span><span class="o">.</span><span class="p">(</span><span class="n">Z1</span><span class="p">),</span><span class="w"> </span><span class="n">colorbar</span><span class="o">=</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="ss">:rainbow</span><span class="p">,</span><span class="w"> </span><span class="n">ticks</span><span class="o">=</span><span class="nb">false</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -16513,7 +16528,7 @@ Stacktrace:
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[5]:</div>
 
 
 
@@ -16521,33 +16536,33 @@ Stacktrace:
 <!--?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?-->
 <svg width="600" height="400" viewBox="0 0 2400 1600">
 <defs>
-  <clipPath id="clip090">
+  <clipPath id="clip660">
     <rect x="0" y="0" width="2400" height="1600"></rect>
   </clipPath>
 </defs>
-<path clip-path="url(#clip090)" d="
+<path clip-path="url(#clip660)" d="
 M0 1600 L2400 1600 L2400 0 L0 0  Z
   " fill="#ffffff" fill-rule="evenodd" fill-opacity="1"></path>
 <defs>
-  <clipPath id="clip091">
+  <clipPath id="clip661">
     <rect x="480" y="0" width="1681" height="1600"></rect>
   </clipPath>
 </defs>
-<path clip-path="url(#clip090)" d="
+<path clip-path="url(#clip660)" d="
 M47.2441 1552.76 L2352.76 1552.76 L2352.76 47.2441 L47.2441 47.2441  Z
   " fill="#ffffff" fill-rule="evenodd" fill-opacity="1"></path>
 <defs>
-  <clipPath id="clip092">
+  <clipPath id="clip662">
     <rect x="47" y="47" width="2307" height="1507"></rect>
   </clipPath>
 </defs>
-<polyline clip-path="url(#clip090)" style="stroke:#000000; stroke-linecap:round; stroke-linejoin:round; stroke-width:4; stroke-opacity:1; fill:none;" points="
+<polyline clip-path="url(#clip660)" style="stroke:#000000; stroke-linecap:round; stroke-linejoin:round; stroke-width:4; stroke-opacity:1; fill:none;" points="
   47.2441,1552.76 2352.76,1552.76 
   "></polyline>
-<polyline clip-path="url(#clip090)" style="stroke:#000000; stroke-linecap:round; stroke-linejoin:round; stroke-width:4; stroke-opacity:1; fill:none;" points="
+<polyline clip-path="url(#clip660)" style="stroke:#000000; stroke-linecap:round; stroke-linejoin:round; stroke-width:4; stroke-opacity:1; fill:none;" points="
   47.2441,1552.76 47.2441,47.2441 
   "></polyline>
-<g clip-path="url(#clip092)">
+<g clip-path="url(#clip662)">
 &lt;image width="2306" height="1506" xlink:href="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAACQIAAAXiCAYAAABNhweEAAAgAElEQVR4nOzdvXkUWduu4dI+iAF3
 DIzPGQIgAhIQAeCMQQKYCHMSkDHOBIASIIIJQDivgTHuJNHbQEXfC9ZDVbX6t3SezqtPtLqrq0v7
@@ -19054,6 +19069,22 @@ RU5ErkJggg==
 
 </div>
 
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-julia"><pre><span></span>
+</pre></div>
+
+     </div>
+</div>
+</div>
 </div>
 
 </div>
